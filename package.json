@@ -14,6 +14,11 @@
     "db:generate": "pnpm --filter @tokenwise/db generate",
     "db:migrate": "pnpm --filter @tokenwise/db migrate"
   },
+  "pnpm": {
+    "overrides": {
+      "@esbuild-kit/core-utils>esbuild": "^0.25.0"
+    }
+  },
   "devDependencies": {
     "@eslint/js": "10.0.1",
     "@types/node": "22.19.0",
