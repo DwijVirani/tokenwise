@@ -9,3 +9,4 @@ coverage
 *.log
 .DS_Store
 graphify-out
+next-env.d.ts
