@@ -34,6 +34,10 @@ export function chatRoutes(
       });
 
       reply.hijack();
+      // hijack() skips Fastify's header handling, so carry over the CORS headers set earlier.
+      for (const [name, value] of Object.entries(reply.getHeaders())) {
+        if (value !== undefined) reply.raw.setHeader(name, value);
+      }
       reply.raw.writeHead(200, {
         "content-type": "text/event-stream",
         "cache-control": "no-cache",

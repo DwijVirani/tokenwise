@@ -26,7 +26,7 @@ export default function LoginPage() {
       setError(result.error.message ?? "Something went wrong.");
       return;
     }
-    router.push("/");
+    router.push("/chat");
   }
 
   async function onGithub() {

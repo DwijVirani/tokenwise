@@ -50,7 +50,11 @@ export async function buildApp(
     return reply.code(ERROR_HTTP_STATUS.INTERNAL).send(apiError("INTERNAL", "Something went wrong."));
   });
 
-  await app.register(cors, { origin: env.WEB_ORIGIN, credentials: true });
+  await app.register(cors, {
+    origin: env.WEB_ORIGIN,
+    credentials: true,
+    methods: ["GET", "HEAD", "POST", "PATCH", "DELETE"],
+  });
 
   const auth = createAuth(env, db);
   const requireUser = createRequireUser(auth);
