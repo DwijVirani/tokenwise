@@ -23,6 +23,12 @@ export function conversationRoutes(
       return reply.code(201).send(await service.create(request.user!.id, body.title));
     });
 
+    app.get("/conversations/:id/messages", opts, async (request, reply) => {
+      const { id } = idParams.parse(request.params);
+      const rows = await service.listMessages(request.user!.id, id);
+      return rows ?? reply.code(ERROR_HTTP_STATUS.NOT_FOUND).send(notFound());
+    });
+
     app.patch("/conversations/:id", opts, async (request, reply) => {
       const { id } = idParams.parse(request.params);
       const { title } = renameBody.parse(request.body);

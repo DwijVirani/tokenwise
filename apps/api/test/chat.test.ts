@@ -81,9 +81,14 @@ describe("POST /chat", () => {
     const cookie = await signedInCookie();
     const conversationId = await newConversation(cookie);
 
-    const res = await post(cookie, { conversationId, message: "hi" });
+    const res = await fetch(`${base}/chat`, {
+      method: "POST",
+      headers: { cookie, origin: WEB_ORIGIN, "content-type": "application/json" },
+      body: JSON.stringify({ conversationId, message: "hi" }),
+    });
     const text = await res.text();
 
+    expect(res.headers.get("access-control-allow-origin")).toBe(WEB_ORIGIN);
     expect(res.headers.get("content-type")).toBe("text/event-stream");
     expect(text).toContain('"type":"delta"');
     expect(text).toContain('"status":"complete"');

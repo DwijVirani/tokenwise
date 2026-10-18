@@ -1,3 +1,9 @@
+"use client";
+
+import { useParams } from "next/navigation";
+import { ChatView } from "@/components/chat/chat-view";
+
 export default function ChatPage() {
-  return <main className="px-6 py-24">Chat: coming in a later milestone.</main>;
+  const { id } = useParams<{ id: string }>();
+  return <ChatView conversationId={id} />;
 }

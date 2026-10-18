@@ -1,5 +1,5 @@
-import { type Db, conversations } from "@tokenwise/db";
-import { and, desc, eq, isNull } from "drizzle-orm";
+import { type Db, conversations, messages } from "@tokenwise/db";
+import { and, asc, desc, eq, isNull } from "drizzle-orm";
 
 // Every query is scoped by userId (AGENTS.md invariant 5); a foreign or deleted
 // id is indistinguishable from a missing one.
@@ -22,6 +22,23 @@ export function createConversationsService(db: Db) {
         .from(conversations)
         .where(and(eq(conversations.userId, userId), isNull(conversations.deletedAt)))
         .orderBy(desc(conversations.updatedAt));
+    },
+
+    // Null when the conversation is not the user's.
+    async listMessages(userId: string, id: string) {
+      const [conv] = await db.select({ id: conversations.id }).from(conversations).where(owned(userId, id));
+      if (!conv) return null;
+      return db
+        .select({
+          id: messages.id,
+          role: messages.role,
+          content: messages.content,
+          status: messages.status,
+          createdAt: messages.createdAt,
+        })
+        .from(messages)
+        .where(eq(messages.conversationId, id))
+        .orderBy(asc(messages.createdAt));
     },
 
     async rename(userId: string, id: string, title: string) {
