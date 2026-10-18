@@ -91,13 +91,15 @@ Rule: `apps/web` never talks to Postgres, Redis, Stripe secret APIs, or Anthropi
 
 ## 6. Chat streaming flow
 
-1. Web `useChat` posts `{conversationId, messages}` to `POST /chat`.
+1. Web posts `{conversationId, message}` to `POST /chat`. The server loads history from Postgres; the client never sends prior messages.
 2. API: `requireUser` → validate body (zod, length caps) → load plan.
 3. **Rate limit** check (Redis sliding window per user).
 4. **Reserve quota** (section 7). If it fails, respond with a typed error before calling the model.
 5. Persist the user message; create an `assistant` message row with `status = 'streaming'`.
 6. Call `streamText` with the model, history window, and the plan's `maxOutputTokens`. Pass an `AbortSignal` tied to the client connection.
-7. Pipe the AI SDK stream to the HTTP response as SSE.
+7. `lib/ai.ts` exposes the stream as text deltas; the route writes them as SSE events `{type:"delta",text}` and a final `{type:"done",status,messageId}`. The AI SDK stays inside `lib/ai.ts`.
+
+Until milestone 3 lands reserve/settle, `POST /chat` uses only the deterministic mock model, so no real provider call can happen without a reservation.
 8. On finish (success, abort, or error): write final message content and status, read provider usage, **settle** the reservation, append the ledger row, enqueue a title job if it is the first exchange.
 
 Abort handling: when the client disconnects or the user presses stop, the abort signal cancels the provider request. Settlement uses tokens actually produced; if usage is unavailable, fall back to an estimate and set `usage_estimated = true`.
