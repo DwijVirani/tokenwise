@@ -192,7 +192,7 @@ All API errors share one shape from `packages/shared`:
 { error: { code, message, retryAfterSeconds?, details? } }
 ```
 
-Codes: `UNAUTHENTICATED`, `FORBIDDEN`, `VALIDATION_ERROR`, `RATE_LIMITED`, `QUOTA_EXCEEDED`, `PROVIDER_ERROR`, `INTERNAL`.
+Codes: `UNAUTHENTICATED`, `FORBIDDEN`, `VALIDATION_ERROR`, `NOT_FOUND`, `RATE_LIMITED`, `QUOTA_EXCEEDED`, `PROVIDER_ERROR`, `INTERNAL`.
 
 ## 13. Observability
 
